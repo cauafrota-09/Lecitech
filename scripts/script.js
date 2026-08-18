@@ -3,9 +3,13 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10
 
 // Suas credenciais do Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyD507yI1k5nIKAHit-xNEglMfbvyU-mwjo",
-    databaseURL: "https://lecitech-c0846-default-rtdb.firebaseio.com/",
-    projectId: "lecitech-c0846"
+    apiKey: "AIzaSyDq0D0kz59B3nkMMyIwW5SeHG01_wJPTcM",
+    authDomain: "lecitech-78671.firebaseapp.com",
+    databaseURL: "https://lecitech-78671-default-rtdb.firebaseio.com",
+    projectId: "lecitech-78671",
+    storageBucket: "lecitech-78671.firebasestorage.app",
+    messagingSenderId: "693126140232",
+    appId: "1:693126140232:web:943dfc132719f9904ba37d"
 };
 
 // Inicializa o Firebase
