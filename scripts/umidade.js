@@ -2,9 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD507yI1k5nIKAHit-xNEglMfbvyU-mwjo",
-    databaseURL: "https://lecitech-c0846-default-rtdb.firebaseio.com/",
-    projectId: "lecitech-c0846"
+  apiKey: "AIzaSyD507yI1k5nIKAHit-xNEglMfbvyU-mwjo",
+  databaseURL: "https://lecitech-78671-default-rtdb.firebaseio.com/",
+  projectId: "lecitech-78671"
+
 };
 
 const app = initializeApp(firebaseConfig);
