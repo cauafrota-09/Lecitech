@@ -4,14 +4,16 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10
 // Credenciais Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyD507yI1k5nIKAHit-xNEglMfbvyU-mwjo",
-    databaseURL: "https://lecitech-c0846-default-rtdb.firebaseio.com/",
-    projectId: "lecitech-c0846"
+   databaseURL: "https://lecitech-78671-default-rtdb.firebaseio.com/",
+projectId: "lecitech-78671"
+   
 };
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Referências
+// Mude para ficar exatamente assim:
 const historicoRef = ref(database, 'historico');
 const relatoriosRef = ref(database, 'relatorios');
 
