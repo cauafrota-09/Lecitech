@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecitech - Velocidade do Vento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../estilos/temperatura.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="lecita.png" alt="Logo Escola Lecita" class="logo-img">
+            <h1 class="logo-texto">LECITECH</h1>
+        </div>
+        <nav class="navegacao">
+            <a href="monitoramento.html" class="nav-link">Monitoramento</a>
+            <a href="dashboard.html" class="nav-link ativo">Dashboard (Gráficos)</a>
+            <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
+        </nav>
+        <div class="status-estacao"><span class="ponto-verde"></span> Online</div>
+    </header>
+
+    <main class="container">
+        <div class="acoes-topo">
+            <a href="dashboard.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar aos Sensores</a>
+            <div class="card-destaque-header">
+                <i class="fa-solid fa-wind" style="color: #B0BEC5;"></i>
+                <div>
+                    <span class="label">Velocidade Atual do Vento</span>
+                    <h2 class="valor-destaque"><span id="valor-atual-destaque">--</span> km/h</h2>
+                </div>
+            </div>
+        </div>
+
+        <section class="area-grafico">
+            <canvas id="graficoCanvas"></canvas>
+        </section>
+    </main>
+
+    <script type="module" src="../scripts/vento.js"></script>
+</body>
+</html>
