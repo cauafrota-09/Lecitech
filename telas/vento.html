@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../estilos/temperatura.css">
+    <!-- Chart.js carregado no head -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -27,7 +28,7 @@
         <div class="acoes-topo">
             <a href="dashboard.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar aos Sensores</a>
             <div class="card-destaque-header">
-                <i class="fa-solid fa-wind" style="color: #B0BEC5;"></i>
+                <i class="fa-solid fa-wind" style="color: #00E5FF;"></i>
                 <div>
                     <span class="label">Velocidade Atual do Vento</span>
                     <h2 class="valor-destaque"><span id="valor-atual-destaque">--</span> km/h</h2>
@@ -35,8 +36,11 @@
             </div>
         </div>
 
+        <!-- ÁREA DO GRÁFICO COM ENVOLTÓRIO DE ALTURA FIXADA -->
         <section class="area-grafico">
-            <canvas id="graficoCanvas"></canvas>
+            <div class="canvas-container" style="position: relative; height: 350px; width: 100%;">
+                <canvas id="graficoCanvas"></canvas>
+            </div>
         </section>
     </main>
 
