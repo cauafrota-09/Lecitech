@@ -1,9 +1,5 @@
 import { db, ref, onValue } from "./firebase-config.js";
 
-// Referência ao nó 'historico' (mesma estrutura usada na temperatura)
-const historicoRef = ref(db, 'historico');
-
-// Elementos da Interface
 const valorDestaque = document.getElementById('valor-atual-destaque');
 const canvasElement = document.getElementById('graficoCanvas');
 
@@ -48,52 +44,50 @@ if (canvasElement) {
         }
     });
 
-    // Escuta em tempo real o histórico do Firebase
+    // 1. Escuta o HISTÓRICO para montar a linha do gráfico
+    const historicoRef = ref(db, 'historico');
     onValue(historicoRef, (snapshot) => {
         const dadosHistorico = snapshot.val();
 
         if (dadosHistorico) {
             const listaLabels = [];
             const listaValores = [];
-            let ultimoVento = 0;
 
             Object.keys(dadosHistorico).forEach(idUnico => {
                 const leitura = dadosHistorico[idUnico];
                 
-                // Busca a propriedade 'vento' ou 'velocidade' dentro da leitura
-                const valorVento = leitura.vento ?? leitura.velocidade;
-                
-                if (valorVento !== undefined && leitura.datahora) {
-                    const valor = parseFloat(valorVento);
-                    
-                    // Formatação da data/hora (ex: "24 às 04:29")
+                // Mapeia o campo do vento no histórico
+                const valVento = leitura.vento ?? leitura.velocidade ?? leitura.vel_vento;
+
+                if (valVento !== undefined && valVento !== null && leitura.datahora) {
+                    const valor = parseFloat(valVento);
                     const partes = leitura.datahora.split(' ');
-                    const dia = partes[0].split('-')[0]; 
+                    const dia = partes[0] ? partes[0].split('-')[0] : ''; 
                     const horaMinuto = partes[1] ? partes[1].substring(0, 5) : ''; 
                     
                     listaLabels.push(`${dia} às ${horaMinuto}`);
                     listaValores.push(valor.toFixed(1));
-                    ultimoVento = valor.toFixed(1);
                 }
             });
 
-            // Mantém os últimos 60 registros no gráfico
-            if (listaLabels.length > 60) {
+            if (listaLabels.length > 0) {
                 meuGrafico.data.labels = listaLabels.slice(-60);
                 meuGrafico.data.datasets[0].data = listaValores.slice(-60);
-            } else {
-                meuGrafico.data.labels = listaLabels;
-                meuGrafico.data.datasets[0].data = listaValores;
-            }
-
-            if (valorDestaque) {
-                valorDestaque.innerText = ultimoVento;
-            }
-            meuGrafico.update();
-        } else {
-            if (valorDestaque) {
-                valorDestaque.innerText = "--";
+                meuGrafico.update();
             }
         }
     });
-} 
+
+    // 2. Escuta o mesmo nó do PAINEL DE MONITORAMENTO para atualizar o número no topo
+    // (Ajuste 'estacao' para o caminho exato que seu monitoramento.js usa)
+    const tempoRealRef = ref(db, 'estacao');
+    onValue(tempoRealRef, (snapshot) => {
+        const dados = snapshot.val();
+        if (dados) {
+            const ventoAtual = dados.vento ?? dados.velocidade ?? dados.vel_vento;
+            if (ventoAtual !== undefined && valorDestaque) {
+                valorDestaque.innerText = parseFloat(ventoAtual).toFixed(1);
+            }
+        }
+    });
+}
