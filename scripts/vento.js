@@ -1,7 +1,11 @@
 import { db, ref, onValue } from "./firebase-config.js";
 
+// Referência ao nó 'historico' (mesma estrutura usada na temperatura)
+const historicoRef = ref(db, 'historico');
+
+// Elementos da Interface
+const valorDestaque = document.getElementById('valor-atual-destaque');
 const canvasElement = document.getElementById('graficoCanvas');
-const valorAtualElement = document.getElementById('valor-atual-destaque');
 
 if (canvasElement) {
     const ctx = canvasElement.getContext('2d');
@@ -9,80 +13,87 @@ if (canvasElement) {
     const meuGrafico = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [],
+            labels: [], 
             datasets: [{
                 label: 'Velocidade do Vento (km/h)',
-                data: [],
+                data: [], 
                 borderColor: '#00E5FF',
-                backgroundColor: 'rgba(0, 229, 255, 0.15)',
-                borderWidth: 2,
+                backgroundColor: 'rgba(0, 229, 255, 0.08)',
+                borderWidth: 3,
+                pointBackgroundColor: '#1a2430',
+                pointBorderColor: '#00E5FF',
+                pointBorderWidth: 2,
+                pointRadius: 3,
                 fill: true,
-                tension: 0.3,
-                pointRadius: 4,
-                pointBackgroundColor: '#00E5FF'
+                tension: 0.3 
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { 
-                    ticks: { color: '#9ba6b5' }, 
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' } 
-                },
                 y: { 
                     beginAtZero: true,
-                    ticks: { color: '#9ba6b5' }, 
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' } 
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
+                    ticks: { color: '#9ba6b5' } 
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#9ba6b5', maxTicksLimit: 12 } 
                 }
             },
-            plugins: {
-                legend: { 
-                    labels: { color: '#ffffff', font: { family: 'Poppins' } } 
+            plugins: { 
+                legend: { display: false } 
+            }
+        }
+    });
+
+    // Escuta em tempo real o histórico do Firebase
+    onValue(historicoRef, (snapshot) => {
+        const dadosHistorico = snapshot.val();
+
+        if (dadosHistorico) {
+            const listaLabels = [];
+            const listaValores = [];
+            let ultimoVento = 0;
+
+            Object.keys(dadosHistorico).forEach(idUnico => {
+                const leitura = dadosHistorico[idUnico];
+                
+                // Busca a propriedade 'vento' ou 'velocidade' dentro da leitura
+                const valorVento = leitura.vento ?? leitura.velocidade;
+                
+                if (valorVento !== undefined && leitura.datahora) {
+                    const valor = parseFloat(valorVento);
+                    
+                    // Formatação da data/hora (ex: "24 às 04:29")
+                    const partes = leitura.datahora.split(' ');
+                    const dia = partes[0].split('-')[0]; 
+                    const horaMinuto = partes[1] ? partes[1].substring(0, 5) : ''; 
+                    
+                    listaLabels.push(`${dia} às ${horaMinuto}`);
+                    listaValores.push(valor.toFixed(1));
+                    ultimoVento = valor.toFixed(1);
                 }
-            }
-        }
-    });
+            });
 
-    // Certifique-se de que o caminho do nó corresponde ao cadastrado no Firebase
-    const ventoRef = ref(db, 'estacao/vento');
-
-    onValue(ventoRef, (snapshot) => {
-        const data = snapshot.val();
-        console.log("Dados recebidos do Firebase:", data); // Verifique no F12 -> Console
-
-        if (data !== null && data !== undefined) {
-            let rotulos = [];
-            let valores = [];
-
-            if (typeof data === 'object' && !Array.isArray(data)) {
-                Object.keys(data).forEach((key) => {
-                    const item = data[key];
-                    rotulos.push(item.hora || item.timestamp || key);
-                    const val = typeof item === 'object' ? (item.valor ?? item.velocidade ?? 0) : item;
-                    valores.push(Number(val) || 0);
-                });
-            } else if (Array.isArray(data)) {
-                data.forEach((item, index) => {
-                    rotulos.push(`Leitura ${index + 1}`);
-                    const val = typeof item === 'object' ? (item.valor ?? item.velocidade ?? 0) : item;
-                    valores.push(Number(val) || 0);
-                });
+            // Mantém os últimos 60 registros no gráfico
+            if (listaLabels.length > 60) {
+                meuGrafico.data.labels = listaLabels.slice(-60);
+                meuGrafico.data.datasets[0].data = listaValores.slice(-60);
             } else {
-                rotulos = ['Agora'];
-                valores = [Number(data) || 0];
+                meuGrafico.data.labels = listaLabels;
+                meuGrafico.data.datasets[0].data = listaValores;
             }
 
-            const ultimoValor = valores[valores.length - 1];
-            if (valorAtualElement) {
-                valorAtualElement.textContent = ultimoValor.toFixed(2);
+            if (valorDestaque) {
+                valorDestaque.innerText = ultimoVento;
             }
-
-            meuGrafico.data.labels = rotulos.slice(-15);
-            meuGrafico.data.datasets[0].data = valores.slice(-15);
             meuGrafico.update();
+        } else {
+            if (valorDestaque) {
+                valorDestaque.innerText = "--";
+            }
         }
-    }, (error) => {
-        console.error("Erro no Firebase:", error);
     });
-}
+} 
