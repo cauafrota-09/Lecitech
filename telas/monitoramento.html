@@ -109,5 +109,28 @@
     </main>
 
     <script type="module" src="../scripts/script.js"></script>
+<!-- Widget do Assistente IA -->
+<div id="chat-widget">
+  <button id="chat-toggle-btn" onclick="toggleChat()">✨ Assistente IA</button>
+  
+  <div id="chat-box" class="chat-box-oculto">
+    <div class="chat-header">
+      <span>✨ IA LECITECH</span>
+      <button onclick="toggleChat()" class="close-btn">&times;</button>
+    </div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="msg ia-msg">
+        <b>IA Lecitech:</b> Olá! Como posso te ajudar a interpretar os dados climáticos hoje?
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Pergunte algo sobre o clima..." onkeypress="if(event.key==='Enter') enviarMensagemIA()">
+      <button id="chat-btn-send" onclick="enviarMensagemIA()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../scripts/ia-assistente.js"></script>
+
 </body>
 </html>
