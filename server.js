@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const API_KEY = "";
+const API_KEY = "AQ.Ab8RN6Lhz1QBZ6dWlGgwWRFe2VmGrvojAXJ6besSaksjhTomOw";
 
 app.post('/api/chat', async (req, res) => {
   try {

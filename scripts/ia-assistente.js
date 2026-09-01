@@ -1,4 +1,4 @@
-const API_KEY = "";
+const API_KEY = "AQ.Ab8RN6Lhz1QBZ6dWlGgwWRFe2VmGrvojAXJ6besSaksjhTomOw";
 
 // Função para abrir e fechar a janela do chat
 function toggleChat() {
@@ -36,7 +36,7 @@ async function enviarMensagemIA() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
   // URL corrigida incluindo o caminho models/
-const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" + API_KEY;
+const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
   try {
     const response = await fetch(url, {
       method: "POST",
