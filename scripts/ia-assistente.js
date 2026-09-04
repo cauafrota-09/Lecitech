@@ -1,5 +1,3 @@
-const API_KEY = "AQ.Ab8RN6Lhz1QBZ6dWlGgwWRFe2VmGrvojAXJ6besSaksjhTomOw";
-
 // Função para abrir e fechar a janela do chat
 function toggleChat() {
   const chatBox = document.getElementById("chat-box");
@@ -8,7 +6,7 @@ function toggleChat() {
   }
 }
 
-// Função para enviar mensagem para a IA do Gemini
+// Função para enviar mensagem capturando dinamicamente os dados do painel da ESP32
 async function enviarMensagemIA() {
   const inputEl = document.getElementById("chat-input");
   const messagesEl = document.getElementById("chat-messages");
@@ -16,7 +14,16 @@ async function enviarMensagemIA() {
 
   if (!textoUsuario) return;
 
-  // Mensagem do usuário
+  // Leitura dinâmica do painel (puxa o que a ESP32 atualizar na tela)
+  const temperatura = document.querySelector(".card-temperatura")?.innerText || document.querySelector("#temperatura")?.innerText || "38.3 °C"; 
+  const umidade = document.querySelector(".card-umidade")?.innerText || document.querySelector("#umidade")?.innerText || "37.2 %";
+  const chuva = document.querySelector(".card-chuva")?.innerText || document.querySelector("#chuva")?.innerText || "0.0 mm";
+  const vento = document.querySelector(".card-vento")?.innerText || document.querySelector("#vento")?.innerText || "18.8 km/h";
+  const pressao = document.querySelector(".card-pressao")?.innerText || document.querySelector("#pressao")?.innerText || "1008.4 hPa";
+  const co2 = document.querySelector(".card-co2")?.innerText || document.querySelector("#co2")?.innerText || "455 ppm";
+  const amoniaVal = document.querySelector(".card-amonia")?.innerText || document.querySelector("#amonia")?.innerText || "56 ppm";
+  const qualidade = document.querySelector(".card-qualidade")?.innerText || document.querySelector("#qualidade")?.innerText || "MODERADA";
+
   messagesEl.innerHTML += `
     <div class="msg user-msg">
       <b>Você:</b> ${textoUsuario}
@@ -26,41 +33,41 @@ async function enviarMensagemIA() {
   inputEl.value = "";
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
-  // Indicador de "Pensando..."
   const loadingId = "loading-" + Date.now();
   messagesEl.innerHTML += `
     <div class="msg ia-msg" id="${loadingId}">
-      <b>IA Lecitech:</b> Pensando...
+      <b>IA Lecitech:</b> Pensando<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
     </div>
   `;
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
-  // URL corrigida incluindo o caminho models/
-const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+  const contextoDados = `
+    [DADOS ATUAIS DA ESTAÇÃO ESP32]
+    - Temperatura: ${temperatura}
+    - Umidade: ${umidade}
+    - Chuva: ${chuva}
+    - Vento: ${vento}
+    - Pressão: ${pressao}
+    - CO2: ${co2}
+    - Amônia: ${amoniaVal}
+    - Qualidade do Ar: ${qualidade}
+  `;
+
   try {
-    const response = await fetch(url, {
+    const response = await fetch("http://localhost:3000/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Você é o assistente virtual da estação meteorológica LECITECH. Responda de forma sucinta e amigável sobre dados climáticos.\n\nPergunta do usuário: ${textoUsuario}`
-              }
-            ]
-          }
-        ]
+      body: JSON.stringify({ 
+        mensagem: `${contextoDados}\n\nPergunta do usuário: ${textoUsuario}` 
       })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      const msgErro = data.error?.message || `Erro HTTP ${response.status}`;
-      throw new Error(msgErro);
+      throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
     }
 
     const respostaIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "Não consegui processar a resposta.";
@@ -70,11 +77,11 @@ const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-
       loadingEl.innerHTML = `<b>IA Lecitech:</b> ${respostaIA}`;
     }
   } catch (error) {
-    console.error("Erro na API do Gemini:", error);
+    console.error("Erro na comunicação com o servidor local:", error);
     const loadingEl = document.getElementById(loadingId);
     if (loadingEl) {
       loadingEl.className = "msg ia-msg error";
-      loadingEl.innerHTML = `❌ Erro na consulta: ${error.message}`;
+      loadingEl.innerHTML = `❌ Erro: ${error.message}`;
     }
   }
 
