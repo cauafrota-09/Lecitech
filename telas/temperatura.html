@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecitech - Gráfico de Umidade</title>
+    <title>Lecitech - Gráfico de Temperatura</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../estilos/umidade.css">
+    
+    <link rel="stylesheet" href="../estilos/temperatura.css">
 </head>
 <body>
 
@@ -30,8 +31,8 @@
         
         <div class="cabecalho-dados">
             <div class="textos-cabecalho">
-                <h2>Análise Histórica: Umidade do Ar</h2>
-                <p>Monitoramento dos níveis de vapor d'água na atmosfera em Manaus.</p>
+                <h2>Análise Histórica: Temperatura</h2>
+                <p>Variações climáticas registradas em tempo real na região de Manaus.</p>
             </div>
         </div>
 
@@ -39,8 +40,8 @@
             <div class="grafico-header">
                 <a href="dashboard.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar aos Sensores</a>
                 <div class="titulo-grafico-container">
-                    <h3><i class="fa-solid fa-droplet" style="color: #00E5FF;"></i> Variação de Umidade (%)</h3>
-                    <span id="valor-atual-destaque" class="valor-destaque">-- %</span>
+                    <h3><i class="fa-solid fa-temperature-half" style="color: #FF4B4B;"></i> Variação de Temperatura (°C)</h3>
+                    <span id="valor-atual-destaque" class="valor-destaque">-- °C</span>
                 </div>
             </div>
             <div class="canvas-container">
@@ -52,7 +53,7 @@
             <div class="cabecalho-dados">
                 <div class="textos-cabecalho">
                     <h2>Histórico de Recordes Diários</h2>
-                    <p>Resumo das taxas extremas de umidade arquivadas à Meia-Noite.</p>
+                    <p>Resumo de temperaturas extremas arquivadas automaticamente na virada de cada dia (Meia-Noite).</p>
                 </div>
             </div>
             
@@ -61,8 +62,8 @@
                     <thead>
                         <tr>
                             <th><i class="fa-solid fa-calendar-day"></i> Data do Registro</th>
-                            <th><i class="fa-solid fa-cloud-showers-water" style="color: #00E5FF;"></i> Umidade Máxima</th>
-                            <th><i class="fa-solid fa-sun" style="color: #FFB300;"></i> Umidade Mínima</th>
+                            <th><i class="fa-solid fa-temperature-arrow-up" style="color: #FF4B4B;"></i> Temp. Máxima</th>
+                            <th><i class="fa-solid fa-temperature-arrow-down" style="color: #00E5FF;"></i> Temp. Mínima</th>
                         </tr>
                     </thead>
                     <tbody id="corpo-tabela-relatorios">
@@ -79,7 +80,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="../scripts/umidade.js"></script>
+    <script type="module" src="../scripts/temperatura.js"></script>
     <script type="module" src="../scripts/presenca.js"></script>
 </body>
 </html>
