@@ -19,10 +19,11 @@
         <nav class="navegacao">
             <a href="monitoramento.html" class="nav-link">Monitoramento</a>
             <a href="dashboard.html" class="nav-link ativo">Dashboard (Gráficos)</a>
+            <a href="historico.html" class="nav-link">Histórico</a>
             <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
         </nav>
         <div class="status-estacao">
-            <span class="ponto-verde"></span> Online
+            <span class="ponto-verde"></span> Online <span id="online-count">(--)</span>
         </div>
     </header>
 
@@ -80,5 +81,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../scripts/umidade.js"></script>
+    <script type="module" src="../scripts/presenca.js"></script>
 </body>
 </html>

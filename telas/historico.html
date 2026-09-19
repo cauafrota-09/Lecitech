@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecitech - Histórico dos Últimos 5 Dias</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../estilos/historico.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-container">
+            <img src="lecita.png" alt="Logo Escola Lecita" class="logo-img">
+            <h1 class="logo-texto">LECITECH</h1>
+        </div>
+        <nav class="navegacao">
+            <a href="monitoramento.html" class="nav-link">Monitoramento</a>
+            <a href="dashboard.html" class="nav-link">Dashboard (Gráficos)</a>
+            <a href="#" class="nav-link ativo">Histórico</a>
+            <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
+        </nav>
+        <div class="status-estacao">
+            <span class="ponto-verde"></span> Online <span id="online-count">(--)</span>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="cabecalho-dados">
+            <div class="textos-cabecalho">
+                <h2>Histórico dos Últimos 5 Dias</h2>
+                <p>Resumo diário de temperatura, umidade, chuva e vento. O dia mais antigo sai automaticamente conforme um novo chega.</p>
+            </div>
+        </div>
+
+        <div class="lista-historico" id="lista-historico">
+            <p style="text-align:center; color:#9ba6b5; padding:40px;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Calculando o histórico dos últimos dias...
+            </p>
+        </div>
+
+    </main>
+
+    <script type="module" src="../scripts/historico.js"></script>
+    <script type="module" src="../scripts/presenca.js"></script>
+</body>
+</html>

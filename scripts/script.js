@@ -31,11 +31,11 @@ onValue(estacaoRef, (snapshot) => {
         document.getElementById('chuva').innerText = parseFloat(dados.chuva).toFixed(1);
         document.getElementById('vento').innerText = parseFloat(dados.vento).toFixed(1);
         document.getElementById('pressao').innerText = parseFloat(dados.pressao).toFixed(1);
-        
+
         // CO2 e NH3 geralmente são números inteiros
         document.getElementById('co2').innerText = parseInt(dados.co2);
         document.getElementById('nh3').innerText = parseInt(dados.nh3);
-        
+
         // Textos
         document.getElementById('qualidade').innerText = dados.qualidadeAr;
 
@@ -48,18 +48,45 @@ onValue(estacaoRef, (snapshot) => {
 });
 
 // ---------------------------------------------------------
+// ÚLTIMA ATUALIZAÇÃO (mostra quando os dados foram gerados de fato,
+// usando o carimbo de data/hora do registro mais recente em 'historico',
+// e não apenas a hora em que o navegador recebeu o valor)
+// ---------------------------------------------------------
+const historicoRef = ref(database, 'historico');
+onValue(historicoRef, (snapshot) => {
+    const dados = snapshot.val();
+    const elemento = document.getElementById('ultima-atualizacao');
+    if (!elemento) return;
+
+    if (!dados) {
+        elemento.innerText = 'Última atualização: --';
+        return;
+    }
+
+    const chaves = Object.keys(dados);
+    // As chaves geradas por push() do Firebase seguem ordem cronológica,
+    // então a última do array é sempre a leitura mais recente.
+    const ultimaChave = chaves[chaves.length - 1];
+    const ultimaLeitura = dados[ultimaChave];
+
+    if (ultimaLeitura && ultimaLeitura.datahora) {
+        elemento.innerText = `Última atualização: ${ultimaLeitura.datahora}`;
+    }
+});
+
+// ---------------------------------------------------------
 // RELÓGIO EM TEMPO REAL (Painel)
 // ---------------------------------------------------------
 const relogioElemento = document.getElementById('relogio-tempo-real');
 
 function atualizarRelogio() {
     const agora = new Date();
-    
+
     // O padStart(2, '0') garante que os números fiquem com 2 casas (ex: 09 em vez de 9)
     const horas = String(agora.getHours()).padStart(2, '0');
     const minutos = String(agora.getMinutes()).padStart(2, '0');
     const segundos = String(agora.getSeconds()).padStart(2, '0');
-    
+
     relogioElemento.innerText = `${horas}:${minutos}:${segundos}`;
 }
 

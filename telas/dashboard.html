@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecitech - Painel de Gráficos</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../estilos/dashboard.css">
 </head>
@@ -16,17 +16,14 @@
             <img src="lecita.png" alt="Logo Escola Lecita" class="logo-img">
             <h1 class="logo-texto">LECITECH</h1>
         </div>
-
         <nav class="navegacao">
             <a href="monitoramento.html" class="nav-link">Monitoramento</a>
             <a href="#" class="nav-link ativo">Dashboard (Gráficos)</a>
+            <a href="historico.html" class="nav-link">Histórico</a>
             <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
         </nav>
-
-        <!-- STATUS + CONTADOR -->
         <div class="status-estacao">
-            <span class="ponto-verde"></span>
-            Online <span id="online-count">(--)</span>
+            <span class="ponto-verde"></span> Online <span id="online-count">(--)</span>
         </div>
     </header>
 
@@ -42,33 +39,25 @@
         <div class="grid-sensores">
             
             <a href="temperatura.html" class="card-clicavel">
-                <div class="card-icone" style="color: #FF4B4B;">
-                    <i class="fa-solid fa-temperature-half"></i>
-                </div>
+                <div class="card-icone" style="color: #FF4B4B;"><i class="fa-solid fa-temperature-half"></i></div>
                 <h3>Temperatura</h3>
                 <p>Linha Diária e Recordes</p>
             </a>
 
             <a href="umidade.html" class="card-clicavel">
-                <div class="card-icone" style="color: #00E5FF;">
-                    <i class="fa-solid fa-droplet"></i>
-                </div>
+                <div class="card-icone" style="color: #00E5FF;"><i class="fa-solid fa-droplet"></i></div>
                 <h3>Umidade</h3>
                 <p>Análise de Variação</p>
             </a>
 
             <a href="precipitacao.html" class="card-clicavel">
-                <div class="card-icone" style="color: #4FC3F7;">
-                    <i class="fa-solid fa-cloud-showers-heavy"></i>
-                </div>
+                <div class="card-icone" style="color: #4FC3F7;"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
                 <h3>Precipitação (Chuva)</h3>
                 <p>Volume Acumulado</p>
             </a>
 
             <a href="vento.html" class="card-clicavel">
-                <div class="card-icone" style="color: #B0BEC5;">
-                    <i class="fa-solid fa-wind"></i>
-                </div>
+                <div class="card-icone" style="color: #B0BEC5;"><i class="fa-solid fa-wind"></i></div>
                 <h3>Velocidade do Vento</h3>
                 <p>Análise de Rajadas</p>
             </a>
@@ -78,9 +67,6 @@
     </main>
 
     <script type="module" src="../scripts/dashboard.js"></script>
-
-    <!-- CONTADOR DE PESSOAS ONLINE -->
     <script type="module" src="../scripts/presenca.js"></script>
-
 </body>
 </html>

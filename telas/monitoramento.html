@@ -5,250 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecitech - Monitoramento</title>
     
-    <!-- Fontes -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS -->
     <link rel="stylesheet" href="../estilos/monitoramento.css">
 </head>
-
 <body>
 
-    <!-- CABEÇALHO -->
     <header class="header">
-
         <div class="logo-container">
             <img src="lecita.png" alt="Logo Escola Lecita" class="logo-img">
             <h1 class="logo-texto">LECITECH</h1>
         </div>
-
         <nav class="navegacao">
             <a href="#" class="nav-link ativo">Monitoramento</a>
             <a href="dashboard.html" class="nav-link">Dashboard (Gráficos)</a>
+            <a href="historico.html" class="nav-link">Histórico</a>
             <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
         </nav>
-
-        <!-- STATUS + CONTADOR DE USUÁRIOS -->
         <div class="status-estacao">
-            <span class="ponto-verde"></span>
-            Online <span id="online-count">(--)</span>
+            <span class="ponto-verde"></span> Online <span id="online-count">(--)</span>
         </div>
-
     </header>
 
-
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="container">
-
+        
         <div class="cabecalho-dados">
-
             <div class="textos-cabecalho">
                 <h2>Dados em Tempo Real</h2>
                 <p>Monitoramento contínuo dos sensores</p>
             </div>
-
+            
             <div class="relogio-container">
                 <i class="fa-regular fa-clock"></i>
                 <span id="relogio-tempo-real">00:00:00</span>
             </div>
-
         </div>
 
-
-        <!-- CARDS DOS SENSORES -->
         <div class="grid-sensores">
-
-            <!-- TEMPERATURA -->
             <div class="card">
-                <div class="card-icone" style="color: #FF4B4B;">
-                    <i class="fa-solid fa-temperature-half"></i>
-                </div>
-
+                <div class="card-icone" style="color: #FF4B4B;"><i class="fa-solid fa-temperature-half"></i></div>
                 <div class="card-info">
                     <h3>Temperatura</h3>
-                    <div class="valor">
-                        <span id="temp">--</span> °C
-                    </div>
+                    <div class="valor"><span id="temp">--</span> °C</div>
                 </div>
             </div>
 
-
-            <!-- UMIDADE -->
             <div class="card">
-                <div class="card-icone" style="color: #00E5FF;">
-                    <i class="fa-solid fa-droplet"></i>
-                </div>
-
+                <div class="card-icone" style="color: #00E5FF;"><i class="fa-solid fa-droplet"></i></div>
                 <div class="card-info">
                     <h3>Umidade do Ar</h3>
-                    <div class="valor">
-                        <span id="umid">--</span> %
-                    </div>
+                    <div class="valor"><span id="umid">--</span> %</div>
                 </div>
             </div>
 
-
-            <!-- PRECIPITAÇÃO -->
             <div class="card">
-                <div class="card-icone" style="color: #4FC3F7;">
-                    <i class="fa-solid fa-cloud-showers-heavy"></i>
-                </div>
-
+                <div class="card-icone" style="color: #4FC3F7;"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
                 <div class="card-info">
                     <h3>Precipitação (Chuva)</h3>
-                    <div class="valor">
-                        <span id="chuva">--</span> mm
-                    </div>
+                    <div class="valor"><span id="chuva">--</span> mm</div>
                 </div>
             </div>
 
-
-            <!-- VENTO -->
             <div class="card">
-                <div class="card-icone" style="color: #B0BEC5;">
-                    <i class="fa-solid fa-wind"></i>
-                </div>
-
+                <div class="card-icone" style="color: #B0BEC5;"><i class="fa-solid fa-wind"></i></div>
                 <div class="card-info">
                     <h3>Velocidade do Vento</h3>
-                    <div class="valor">
-                        <span id="vento">--</span> km/h
-                    </div>
+                    <div class="valor"><span id="vento">--</span> km/h</div>
                 </div>
             </div>
 
-
-            <!-- PRESSÃO -->
             <div class="card">
-                <div class="card-icone" style="color: #9575CD;">
-                    <i class="fa-solid fa-gauge-high"></i>
-                </div>
-
+                <div class="card-icone" style="color: #9575CD;"><i class="fa-solid fa-gauge-high"></i></div>
                 <div class="card-info">
                     <h3>Pressão Atmosférica</h3>
-                    <div class="valor">
-                        <span id="pressao">--</span> hPa
-                    </div>
+                    <div class="valor"><span id="pressao">--</span> hPa</div>
                 </div>
             </div>
 
-
-            <!-- CO2 -->
             <div class="card">
-                <div class="card-icone" style="color: #A5D6A7;">
-                    <i class="fa-solid fa-smog"></i>
-                </div>
-
+                <div class="card-icone" style="color: #A5D6A7;"><i class="fa-solid fa-smog"></i></div>
                 <div class="card-info">
                     <h3>Gás Carbônico (CO2)</h3>
-                    <div class="valor">
-                        <span id="co2">--</span> ppm
-                    </div>
+                    <div class="valor"><span id="co2">--</span> ppm</div>
                 </div>
             </div>
 
-
-            <!-- NH3 -->
             <div class="card">
-                <div class="card-icone" style="color: #FFB300;">
-                    <i class="fa-solid fa-flask"></i>
-                </div>
-
+                <div class="card-icone" style="color: #FFB300;"><i class="fa-solid fa-flask"></i></div>
                 <div class="card-info">
                     <h3>Amônia (NH3)</h3>
-                    <div class="valor">
-                        <span id="nh3">--</span> ppm
-                    </div>
+                    <div class="valor"><span id="nh3">--</span> ppm</div>
                 </div>
             </div>
 
-
-            <!-- QUALIDADE DO AR -->
             <div class="card destaque-amarelo">
-
-                <div class="card-icone">
-                    <i class="fa-solid fa-leaf"></i>
-                </div>
-
+                <div class="card-icone"><i class="fa-solid fa-leaf"></i></div>
                 <div class="card-info">
                     <h3>Qualidade do Ar</h3>
-
-                    <div class="valor" id="qualidade">
-                        Calculando...
-                    </div>
+                    <div class="valor" id="qualidade">Calculando...</div>
                 </div>
-
             </div>
-
         </div>
 
+        <p id="ultima-atualizacao" style="margin-top: 20px; text-align: right; color: #9ba6b5; font-size: 0.85rem;">
+            Última atualização: --
+        </p>
     </main>
 
-
-    <!-- SCRIPT DOS SENSORES -->
     <script type="module" src="../scripts/script.js"></script>
-
-
-    <!-- SCRIPT DO CONTADOR DE USUÁRIOS ONLINE -->
     <script type="module" src="../scripts/presenca.js"></script>
-
-
-    <!-- WIDGET DO ASSISTENTE IA -->
-    <div id="chat-widget">
-
-        <button id="chat-toggle-btn" onclick="toggleChat()">
-            ✨ Assistente IA
-        </button>
-
-        <div id="chat-box" class="chat-box-oculto">
-
-            <div class="chat-header">
-                <span>✨ IA LECITECH</span>
-
-                <button onclick="toggleChat()" class="close-btn">
-                    &times;
-                </button>
-            </div>
-
-
-            <div id="chat-messages" class="chat-messages">
-
-                <div class="msg ia-msg">
-                    <b>IA Lecitech:</b>
-                    Olá! Como posso te ajudar a interpretar os dados climáticos hoje?
-                </div>
-
-            </div>
-
-
-            <div class="chat-input-area">
-
-                <input
-                    type="text"
-                    id="chat-input"
-                    placeholder="Pergunte algo sobre o clima..."
-                    onkeypress="if(event.key==='Enter') enviarMensagemIA()"
-                >
-
-                <button
-                    id="chat-btn-send"
-                    onclick="enviarMensagemIA()"
-                >
-                    Enviar
-                </button>
-
-            </div>
-
-        </div>
-
+<!-- Widget do Assistente IA -->
+<div id="chat-widget">
+  <button id="chat-toggle-btn" onclick="toggleChat()">✨ Assistente IA</button>
+  
+  <div id="chat-box" class="chat-box-oculto">
+    <div class="chat-header">
+      <span>✨ IA LECITECH</span>
+      <button onclick="toggleChat()" class="close-btn">&times;</button>
     </div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="msg ia-msg">
+        <b>IA Lecitech:</b> Olá! Como posso te ajudar a interpretar os dados climáticos hoje?
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Pergunte algo sobre o clima..." onkeypress="if(event.key==='Enter') enviarMensagemIA()">
+      <button id="chat-btn-send" onclick="enviarMensagemIA()">Enviar</button>
+    </div>
+  </div>
+</div>
 
-
-    <!-- SCRIPT DO ASSISTENTE IA -->
-    <script src="../scripts/ia-assistente.js"></script>
+<script src="../scripts/ia-assistente.js"></script>
 
 </body>
 </html>

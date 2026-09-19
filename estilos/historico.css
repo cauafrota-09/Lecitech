@@ -1,0 +1,69 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background-color: #1a2430; color: #ffffff; }
+
+/* ================= CABEÇALHO (mesmo padrão das outras páginas) ================= */
+.header { background-color: #233142; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4); }
+.logo-container { display: flex; align-items: center; gap: 15px; }
+.logo-img { width: 50px; height: auto; }
+.logo-texto { font-size: 1.8rem; font-weight: 700; color: #00E5FF; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+.navegacao { display: flex; gap: 30px; }
+.nav-link { text-decoration: none; color: #9ba6b5; font-weight: 600; font-size: 0.95rem; padding-bottom: 5px; transition: 0.3s; }
+.nav-link:hover { color: #00E5FF; }
+.nav-link.ativo { color: #00E5FF; border-bottom: 2px solid #00E5FF; }
+.status-estacao { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; color: #4CAF50; }
+.ponto-verde { width: 10px; height: 10px; background-color: #4CAF50; border-radius: 50%; box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); animation: piscar 1.5s infinite; }
+@keyframes piscar { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+/* ================= ÁREA PRINCIPAL ================= */
+.container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+.cabecalho-dados { margin-bottom: 30px; border-left: 5px solid #00E5FF; padding-left: 15px; }
+.textos-cabecalho h2 { font-size: 1.4rem; color: #ffffff; }
+.textos-cabecalho p { font-size: 0.9rem; color: #9ba6b5; margin-top: 5px; }
+
+/* ================= LISTA DE DIAS ================= */
+.lista-historico { display: flex; flex-direction: column; gap: 20px; }
+
+.dia-card {
+    background-color: #233142;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #3c4c60;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+.dia-cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #3c4c60; padding-bottom: 12px; }
+.dia-data { font-size: 1.2rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px; }
+.dia-data i { color: #00E5FF; }
+.etiqueta-recente { background: rgba(0, 229, 255, 0.12); color: #00E5FF; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.dia-metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+
+.metrica-mini { background-color: #1a2430; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #3c4c60; }
+.metrica-mini .rotulo { font-size: 0.8rem; color: #9ba6b5; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; }
+.metrica-mini .valores { display: flex; flex-direction: column; gap: 2px; font-size: 1rem; font-weight: 700; }
+.max-valor { color: #FF4B4B; }
+.min-valor { color: #00E5FF; }
+
+/* ================= BALÃO DE COMPARAÇÃO ================= */
+.balao-comparacao {
+    margin-top: 18px;
+    background-color: #1a2430;
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 14px;
+    border-top-left-radius: 4px;
+    padding: 14px 18px;
+    font-size: 0.92rem;
+    color: #e6edf3;
+    line-height: 1.5;
+}
+
+.balao-comparacao strong { color: #00E5FF; }
+
+/* ================= RESPONSIVIDADE ================= */
+@media (max-width: 768px) {
+    .header { flex-direction: column; text-align: center; gap: 15px; }
+    .navegacao { flex-wrap: wrap; justify-content: center; }
+    .dia-metricas { grid-template-columns: repeat(2, 1fr); }
+}
