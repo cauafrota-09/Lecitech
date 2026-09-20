@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecitech - Mapa e Previsão de Chuva</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+    <link rel="stylesheet" href="../estilos/mapa.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-container">
+            <img src="lecita.png" alt="Logo Escola Lecita" class="logo-img">
+            <h1 class="logo-texto">LECITECH</h1>
+        </div>
+        <nav class="navegacao">
+            <a href="monitoramento.html" class="nav-link">Monitoramento</a>
+            <a href="dashboard.html" class="nav-link">Dashboard (Gráficos)</a>
+            <a href="historico.html" class="nav-link">Histórico</a>
+            <a href="#" class="nav-link ativo">Mapa</a>
+            <a href="projeto.html" class="nav-link">Sobre o Projeto</a>
+        </nav>
+        <div class="status-estacao">
+            <span class="ponto-verde"></span> Online <span id="online-count">(--)</span>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="cabecalho-dados">
+            <div class="textos-cabecalho">
+                <h2>Mapa e Previsão de Chuva</h2>
+                <p>Área de abrangência da estação e leitura da tendência climática atual.</p>
+            </div>
+        </div>
+
+        <p class="aviso-cientifico">
+            <i class="fa-solid fa-circle-info"></i>
+            A Lecitech é uma estação <strong>microclimática</strong>: seus dados representam apenas a área ao redor dela,
+            não a cidade de Manaus inteira. O círculo no mapa mostra o raio aproximado de representatividade
+            (~500 m), com base em estudos de climatologia urbana sobre heterogeneidade do entorno.
+        </p>
+
+        <div id="mapa"></div>
+
+        <div class="legenda-mapa">
+            <span class="legenda-circulo"></span> Área de representatividade aproximada da estação (raio ~500 m)
+        </div>
+
+        <div class="dados-atuais-grid">
+            <div class="mini-card">
+                <div class="rotulo"><i class="fa-solid fa-cloud-showers-heavy" style="color:#4FC3F7;"></i> Chuva</div>
+                <div class="valor"><span id="mapa-chuva">--</span> mm</div>
+            </div>
+            <div class="mini-card">
+                <div class="rotulo"><i class="fa-solid fa-droplet" style="color:#00E5FF;"></i> Umidade</div>
+                <div class="valor"><span id="mapa-umidade">--</span> %</div>
+            </div>
+            <div class="mini-card">
+                <div class="rotulo"><i class="fa-solid fa-gauge-high" style="color:#9575CD;"></i> Pressão</div>
+                <div class="valor"><span id="mapa-pressao">--</span> hPa</div>
+            </div>
+            <div class="mini-card">
+                <div class="rotulo"><i class="fa-solid fa-wind" style="color:#B0BEC5;"></i> Vento</div>
+                <div class="valor"><span id="mapa-vento">--</span> km/h</div>
+            </div>
+        </div>
+
+        <div class="card-ia">
+            <div class="card-ia-titulo"><i class="fa-solid fa-robot"></i> Leitura da IA sobre a chuva</div>
+            <div class="card-ia-texto" id="texto-ia-clima">
+                <i class="fa-solid fa-spinner fa-spin"></i> Analisando os dados atuais...
+            </div>
+            <div class="card-ia-disclaimer">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Isso é uma interpretação educativa gerada por IA a partir da leitura atual dos sensores —
+                não é uma previsão meteorológica oficial nem substitui órgãos como o INMET.
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script type="module" src="../scripts/mapa.js"></script>
+    <script type="module" src="../scripts/presenca.js"></script>
+</body>
+</html>
