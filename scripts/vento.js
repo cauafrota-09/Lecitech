@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -11,11 +11,17 @@ const firebaseConfig = {
     appId: "1:693126140232:web:943dfc132719f9904ba37d"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+const historicoRef = ref(database, 'historico');
+const tempoRealRef = ref(database, 'estacao');
 const valorDestaque = document.getElementById('valor-atual-destaque');
+const metaEl = document.getElementById('chart-meta');
+
 const ctx = document.getElementById('graficoCanvas').getContext('2d');
+
+let datahorasCompletas = [];
 
 const meuGrafico = new Chart(ctx, {
     type: 'line',
@@ -30,7 +36,8 @@ const meuGrafico = new Chart(ctx, {
             pointBackgroundColor: '#1a2430',
             pointBorderColor: '#00E5FF',
             pointBorderWidth: 2,
-            pointRadius: 3,
+            pointRadius: 4,
+            pointHoverRadius: 7,
             fill: true,
             tension: 0.3
         }]
@@ -38,44 +45,68 @@ const meuGrafico = new Chart(ctx, {
     options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
         scales: {
             y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ba6b5' } },
-            x: { grid: { display: false }, ticks: { color: '#9ba6b5', maxTicksLimit: 12 } }
+            x: { grid: { display: false }, ticks: { color: '#9ba6b5', maxTicksLimit: 10, autoSkip: true } }
         },
-        plugins: { legend: { display: false } }
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#233142',
+                borderColor: '#3c4c60',
+                borderWidth: 1,
+                padding: 12,
+                titleColor: '#00E5FF',
+                bodyColor: '#ffffff',
+                callbacks: {
+                    title: (items) => datahorasCompletas[items[0].dataIndex] || '',
+                    label: (item) => `Vento: ${item.formattedValue} km/h`
+                }
+            }
+        }
     }
 });
 
-// Histórico para o gráfico
-const historicoRef = ref(database, 'historico');
+// 1. Escuta o HISTÓRICO para montar a linha do gráfico (só o dia mais recente)
 onValue(historicoRef, (snapshot) => {
     const dadosHistorico = snapshot.val();
-    if (dadosHistorico) {
-        const listaLabels = [];
-        const listaValores = [];
+    if (!dadosHistorico) return;
 
-        Object.keys(dadosHistorico).forEach(idUnico => {
-            const leitura = dadosHistorico[idUnico];
-            const valVento = leitura.vento ?? leitura.velocidade ?? leitura.vel_vento;
+    const leituras = Object.values(dadosHistorico)
+        .map((l) => {
+            const valVento = l.vento ?? l.velocidade ?? l.vel_vento;
+            if (valVento === undefined || valVento === null || !l.datahora) return null;
+            const [dataParte, horaParte] = l.datahora.split(' ');
+            return {
+                data: dataParte,
+                hora: (horaParte || '').substring(0, 5),
+                valor: parseFloat(valVento),
+                datahora: l.datahora
+            };
+        })
+        .filter(Boolean);
 
-            if (valVento !== undefined && valVento !== null && leitura.datahora) {
-                const valor = parseFloat(valVento);
-                const partes = leitura.datahora.split(' ');
-                const dia = partes[0] ? partes[0].split('-')[0] : '';
-                const horaMinuto = partes[1] ? partes[1].substring(0, 5) : '';
-                listaLabels.push(`${dia} às ${horaMinuto}`);
-                listaValores.push(valor.toFixed(1));
-            }
-        });
+    if (leituras.length === 0) return;
 
-        meuGrafico.data.labels = listaLabels.slice(-60);
-        meuGrafico.data.datasets[0].data = listaValores.slice(-60);
-        meuGrafico.update();
+    const dataMaisRecente = leituras[leituras.length - 1].data;
+    const leiturasDoDia = leituras.filter((l) => l.data === dataMaisRecente);
+
+    const labels = leiturasDoDia.map((l) => l.hora);
+    const valores = leiturasDoDia.map((l) => l.valor.toFixed(1));
+    datahorasCompletas = leiturasDoDia.map((l) => `${l.data} às ${l.hora}`);
+
+    meuGrafico.data.labels = labels;
+    meuGrafico.data.datasets[0].data = valores;
+    meuGrafico.update();
+
+    if (metaEl) {
+        const [dia, mes, ano] = dataMaisRecente.split('-');
+        metaEl.innerText = `📅 Dados de ${dia}/${mes}/${ano} · Atualiza automaticamente sempre que a estação envia um novo dado (o intervalo entre leituras pode variar)`;
     }
 });
 
-// Valor atual em tempo real
-const tempoRealRef = ref(database, 'estacao');
+// 2. Escuta o valor em tempo real do painel de monitoramento pro número no topo
 onValue(tempoRealRef, (snapshot) => {
     const dados = snapshot.val();
     if (dados) {

@@ -45,36 +45,11 @@
                     <span id="valor-atual-destaque" class="valor-destaque">-- °C</span>
                 </div>
             </div>
+            <p id="chart-meta" style="text-align:center; color:#9ba6b5; font-size:0.82rem; margin: 12px 0 18px;">
+                <i class="fa-solid fa-circle-info"></i> Carregando informações do gráfico...
+            </p>
             <div class="canvas-container">
                 <canvas id="graficoCanvas"></canvas>
-            </div>
-        </div>
-
-        <div class="relatorios-secao">
-            <div class="cabecalho-dados">
-                <div class="textos-cabecalho">
-                    <h2>Histórico de Recordes Diários</h2>
-                    <p>Resumo de temperaturas extremas arquivadas automaticamente na virada de cada dia (Meia-Noite).</p>
-                </div>
-            </div>
-            
-            <div class="tabela-container">
-                <table class="tabela-relatorios">
-                    <thead>
-                        <tr>
-                            <th><i class="fa-solid fa-calendar-day"></i> Data do Registro</th>
-                            <th><i class="fa-solid fa-temperature-arrow-up" style="color: #FF4B4B;"></i> Temp. Máxima</th>
-                            <th><i class="fa-solid fa-temperature-arrow-down" style="color: #00E5FF;"></i> Temp. Mínima</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpo-tabela-relatorios">
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #9ba6b5; padding: 30px;">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Buscando relatórios arquivados...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
