@@ -1,10 +1,19 @@
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ⚠️ COLE AQUI A MESMA API KEY DO GEMINI USADA NO ia-assistente.js
-const GEMINI_API_KEY = "COLE_SUA_CHAVE_AQUI";
+// ---------------------------------------------------------
+// CONFIGURAÇÃO DA IA
+// A chave já está aqui. Não precisa editar nada neste arquivo.
+// ---------------------------------------------------------
+const GEMINI_API_KEY = "AQ.Ab8RN6I-BopUH747TPreJTBTFWcwyyz91nFfJirE72_ZO2n7BQ";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
+// Só considera "sem chave" se estiver vazia ou curta demais
+const chaveConfigurada = GEMINI_API_KEY.trim().length > 20;
+
+// ---------------------------------------------------------
+// FIREBASE
+// ---------------------------------------------------------
 const firebaseConfig = {
     apiKey: "AIzaSyDq0D0kz59B3nkMMyIwW5SeHG01_wJPTcM",
     authDomain: "lecitech-78671.firebaseapp.com",
@@ -54,7 +63,7 @@ const elPressao = document.getElementById('mapa-pressao');
 const elVento = document.getElementById('mapa-vento');
 const elTextoIA = document.getElementById('texto-ia-clima');
 
-let ultimaChaveGerada = null; // evita gerar o texto de novo toda hora sem necessidade
+let ultimaLeitura = null; // evita gerar o texto de novo sem necessidade
 
 const estacaoRef = ref(database, 'estacao');
 onValue(estacaoRef, async (snapshot) => {
@@ -72,9 +81,9 @@ onValue(estacaoRef, async (snapshot) => {
     if (elVento) elVento.innerText = isNaN(vento) ? '--' : vento.toFixed(1);
 
     // Só chama a IA de novo se os valores mudaram desde a última vez
-    const chaveAtual = `${chuva}-${umidade}-${pressao}-${vento}`;
-    if (chaveAtual === ultimaChaveGerada) return;
-    ultimaChaveGerada = chaveAtual;
+    const leituraAtual = `${chuva}-${umidade}-${pressao}-${vento}`;
+    if (leituraAtual === ultimaLeitura) return;
+    ultimaLeitura = leituraAtual;
 
     await gerarLeituraIA({ chuva, umidade, pressao, vento });
 });
@@ -82,7 +91,7 @@ onValue(estacaoRef, async (snapshot) => {
 async function gerarLeituraIA({ chuva, umidade, pressao, vento }) {
     if (!elTextoIA) return;
 
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === "COLE_SUA_CHAVE_AQUI") {
+    if (!chaveConfigurada) {
         elTextoIA.innerHTML = 'Configure a API key do Gemini em <code>scripts/mapa.js</code> para ativar essa leitura.';
         return;
     }
