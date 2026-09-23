@@ -1,9 +1,21 @@
-// ⚠️ COLE AQUI A SUA API KEY DO GOOGLE AI STUDIO (aistudio.google.com)
-// As chaves novas do Gemini começam com "AQ." (Auth key) — são enviadas
-// por cabeçalho (x-goog-api-key), não mais coladas na URL.
+// ---------------------------------------------------------
+// CONFIGURAÇÃO DA IA
+// A chave já está aqui. Não precisa editar nada neste arquivo.
+// ---------------------------------------------------------
 const GEMINI_API_KEY = "AQ.Ab8RN6I-BopUH747TPreJTBTFWcwyyz91nFfJirE72_ZO2n7BQ";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+
+// Só considera "sem chave" se estiver vazia ou curta demais
+const chaveConfigurada = GEMINI_API_KEY.trim().length > 20;
+
+// Impede que texto digitado vire código HTML na tela
+function escaparHTML(texto) {
+  return texto
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 // Função para abrir e fechar a janela do chat
 function toggleChat() {
@@ -33,7 +45,7 @@ async function enviarMensagemIA() {
 
   messagesEl.innerHTML += `
     <div class="msg user-msg">
-      <b>Você:</b> ${textoUsuario}
+      <b>Você:</b> ${escaparHTML(textoUsuario)}
     </div>
   `;
 
@@ -61,7 +73,7 @@ async function enviarMensagemIA() {
   `;
 
   try {
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQ.Ab8RN6I-BopUH747TPreJTBTFWcwyyz91nFfJirE72_ZO2n7BQ") {
+    if (!chaveConfigurada) {
       throw new Error("Nenhuma API key configurada. Cole sua chave do Gemini no topo do arquivo ia-assistente.js.");
     }
 
@@ -69,7 +81,7 @@ async function enviarMensagemIA() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": "AQ.Ab8RN6I-BopUH747TPreJTBTFWcwyyz91nFfJirE72_ZO2n7BQ"
+        "x-goog-api-key": GEMINI_API_KEY
       },
       body: JSON.stringify({
         system_instruction: {
@@ -100,14 +112,14 @@ async function enviarMensagemIA() {
 
     const loadingEl = document.getElementById(loadingId);
     if (loadingEl) {
-      loadingEl.innerHTML = `<b>IA Lecitech:</b> ${respostaIA}`;
+      loadingEl.innerHTML = `<b>IA Lecitech:</b> ${escaparHTML(respostaIA)}`;
     }
   } catch (error) {
     console.error("Erro na comunicação com o Gemini:", error);
     const loadingEl = document.getElementById(loadingId);
     if (loadingEl) {
       loadingEl.className = "msg ia-msg error";
-      loadingEl.innerHTML = `❌ Erro: ${error.message}`;
+      loadingEl.innerHTML = `❌ Erro: ${escaparHTML(error.message)}`;
     }
   }
 
