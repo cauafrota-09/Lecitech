@@ -2,16 +2,6 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // ---------------------------------------------------------
-// CONFIGURAÇÃO DA IA
-// A chave já está aqui. Não precisa editar nada neste arquivo.
-// ---------------------------------------------------------
-const GEMINI_API_KEY = "AQ.Ab8RN6I-BopUH747TPreJTBTFWcwyyz91nFfJirE72_ZO2n7BQ";
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
-
-// Só considera "sem chave" se estiver vazia ou curta demais
-const chaveConfigurada = GEMINI_API_KEY.trim().length > 20;
-
-// ---------------------------------------------------------
 // FIREBASE
 // ---------------------------------------------------------
 const firebaseConfig = {
@@ -55,18 +45,42 @@ L.circle([LAT_ESCOLA, LNG_ESCOLA], {
 }).addTo(mapa);
 
 // ---------------------------------------------------------
-// DADOS ATUAIS + TEXTO DA IA
+// CHANCE DE CHUVA + MENSAGENS PROGRAMADAS (sem IA)
+// Regra principal: 0 mm de precipitação = 0% de chance de chuva.
+// ---------------------------------------------------------
+function calcularChuva(mm, umidade) {
+    const v = isNaN(mm) ? null : mm;
+
+    if (v === null) {
+        return { pct: null, texto: 'Aguardando a leitura do sensor de chuva...' };
+    }
+
+    if (v === 0) {
+        let texto = 'Sem chuva registrada pela estação neste momento.';
+        if (!isNaN(umidade) && umidade >= 85) {
+            texto += ' A umidade do ar está alta, mas o sensor não detectou precipitação.';
+        }
+        return { pct: 0, texto };
+    }
+    if (v < 0.5) return { pct: 20,  texto: 'Chuvisco fraco detectado pela estação. A chance de a chuva continuar é baixa.' };
+    if (v < 2.5) return { pct: 40,  texto: 'Chuva fraca em andamento na região da estação.' };
+    if (v < 7.6) return { pct: 60,  texto: 'Chuva moderada em andamento. Fique atento.' };
+    if (v < 25)  return { pct: 80,  texto: 'Chuva forte em andamento. Evite áreas sujeitas a alagamento.' };
+    return         { pct: 100, texto: 'Chuva muito forte! Procure abrigo e evite se deslocar.' };
+}
+
+// ---------------------------------------------------------
+// DADOS ATUAIS
 // ---------------------------------------------------------
 const elChuva = document.getElementById('mapa-chuva');
 const elUmidade = document.getElementById('mapa-umidade');
 const elPressao = document.getElementById('mapa-pressao');
 const elVento = document.getElementById('mapa-vento');
-const elTextoIA = document.getElementById('texto-ia-clima');
-
-let ultimaLeitura = null; // evita gerar o texto de novo sem necessidade
+const elChance = document.getElementById('mapa-chance');
+const elTextoClima = document.getElementById('texto-clima');
 
 const estacaoRef = ref(database, 'estacao');
-onValue(estacaoRef, async (snapshot) => {
+onValue(estacaoRef, (snapshot) => {
     const dados = snapshot.val();
     if (!dados) return;
 
@@ -80,69 +94,7 @@ onValue(estacaoRef, async (snapshot) => {
     if (elPressao) elPressao.innerText = isNaN(pressao) ? '--' : pressao.toFixed(1);
     if (elVento) elVento.innerText = isNaN(vento) ? '--' : vento.toFixed(1);
 
-    // Só chama a IA de novo se os valores mudaram desde a última vez
-    const leituraAtual = `${chuva}-${umidade}-${pressao}-${vento}`;
-    if (leituraAtual === ultimaLeitura) return;
-    ultimaLeitura = leituraAtual;
-
-    await gerarLeituraIA({ chuva, umidade, pressao, vento });
+    const { pct, texto } = calcularChuva(chuva, umidade);
+    if (elChance) elChance.innerText = pct === null ? '--%' : pct + '%';
+    if (elTextoClima) elTextoClima.innerText = texto;
 });
-
-async function gerarLeituraIA({ chuva, umidade, pressao, vento }) {
-    if (!elTextoIA) return;
-
-    if (!chaveConfigurada) {
-        elTextoIA.innerHTML = 'Configure a API key do Gemini em <code>scripts/mapa.js</code> para ativar essa leitura.';
-        return;
-    }
-
-    elTextoIA.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analisando os dados atuais...';
-
-    const contexto = `
-[DADOS ATUAIS DA ESTAÇÃO LECITECH - Monte das Oliveiras, Manaus/AM]
-- Precipitação (chuva): ${isNaN(chuva) ? 'sem leitura' : chuva.toFixed(1) + ' mm'}
-- Umidade do ar: ${isNaN(umidade) ? 'sem leitura' : umidade.toFixed(1) + ' %'}
-- Pressão atmosférica: ${isNaN(pressao) ? 'sem leitura' : pressao.toFixed(1) + ' hPa'}
-- Velocidade do vento: ${isNaN(vento) ? 'sem leitura' : vento.toFixed(1) + ' km/h'}
-    `;
-
-    try {
-        const response = await fetch(GEMINI_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-goog-api-key": GEMINI_API_KEY
-            },
-            body: JSON.stringify({
-                system_instruction: {
-                    parts: [{
-                        text: "Você é um professor de geografia especializado em climatologia, explicando para " +
-                              "estudantes e visitantes de uma feira de robótica escolar (projeto Lecitech) a " +
-                              "tendência de chuva na região com base nos dados atuais de uma estação " +
-                              "microclimática (representativa só de uns 500 metros ao redor dela, não da cidade " +
-                              "toda). Analise principalmente pressão atmosférica, umidade e chuva atual para " +
-                              "estimar se a tendência é de chuva se aproximando, se afastando, ou tempo estável. " +
-                              "Seja breve (2 a 3 frases), didático, e deixe claro que é uma leitura educativa " +
-                              "baseada no instante atual, não uma previsão oficial. Nunca dê datas exatas futuras " +
-                              "(tipo 'vai chover dia 15') — fale em termos de tendência (curto prazo, próximas horas)."
-                    }]
-                },
-                contents: [{
-                    role: "user",
-                    parts: [{ text: `${contexto}\n\nExplique a tendência climática atual, com foco na chuva.` }]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
-        }
-
-        const textoIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "Não consegui gerar uma leitura agora.";
-        elTextoIA.innerText = textoIA;
-    } catch (erro) {
-        console.error('Erro ao consultar a IA:', erro);
-        elTextoIA.innerText = `Não foi possível gerar a leitura da IA agora (${erro.message}).`;
-    }
-}

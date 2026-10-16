@@ -35,7 +35,7 @@
         <div class="cabecalho-dados">
             <div class="textos-cabecalho">
                 <h2>Mapa e Previsão de Chuva</h2>
-                <p>Área de abrangência da estação e leitura da tendência climática atual.</p>
+                <p>Área de abrangência da estação e chance de chuva calculada a partir da precipitação atual.</p>
             </div>
         </div>
 
@@ -72,13 +72,14 @@
         </div>
 
         <div class="card-ia">
-            <div class="card-ia-titulo"><i class="fa-solid fa-robot"></i> Leitura da IA sobre a chuva</div>
-            <div class="card-ia-texto" id="texto-ia-clima">
-                <i class="fa-solid fa-spinner fa-spin"></i> Analisando os dados atuais...
+            <div class="card-ia-titulo"><i class="fa-solid fa-umbrella"></i> Chance de chuva</div>
+            <div class="valor" style="font-size:2.2rem; font-weight:700; margin: 6px 0;" id="mapa-chance">--%</div>
+            <div class="card-ia-texto" id="texto-clima">
+                <i class="fa-solid fa-spinner fa-spin"></i> Aguardando os dados da estação...
             </div>
             <div class="card-ia-disclaimer">
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                Isso é uma interpretação educativa gerada por IA a partir da leitura atual dos sensores —
+                Porcentagem estimada a partir da precipitação medida agora pela estação —
                 não é uma previsão meteorológica oficial nem substitui órgãos como o INMET.
             </div>
         </div>
