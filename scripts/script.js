@@ -1,7 +1,15 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Suas credenciais do Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+    getDatabase,
+    ref,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// ---------------------------------------------------------
+// CONFIGURAÇÃO DO FIREBASE
+// ---------------------------------------------------------
+
 const firebaseConfig = {
     apiKey: "AIzaSyDq0D0kz59B3nkMMyIwW5SeHG01_wJPTcM",
     authDomain: "lecitech-78671.firebaseapp.com",
@@ -12,86 +20,184 @@ const firebaseConfig = {
     appId: "1:693126140232:web:943dfc132719f9904ba37d"
 };
 
-// Inicializa o Firebase
+// Inicialização
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Cria uma referência para a pasta 'estacao' no banco de dados
-const estacaoRef = ref(database, 'estacao');
+// Fuso horário oficial do projeto
+const FUSO_HORARIO = "America/Manaus";
 
-// O 'onValue' fica escutando o banco de dados em tempo real
+// ---------------------------------------------------------
+// FUNÇÕES DE DATA E HORÁRIO
+// ---------------------------------------------------------
+
+// Formata o horário sempre no fuso de Manaus
+function formatarHorario(data = new Date()) {
+    return new Intl.DateTimeFormat("pt-BR", {
+        timeZone: FUSO_HORARIO,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(data);
+}
+
+// Formata data e horário no fuso de Manaus
+function formatarDataHora(data) {
+    if (data === null || data === undefined || data === "") {
+        return "--";
+    }
+
+    let dataConvertida;
+
+    if (typeof data === "number") {
+        // Aceita timestamp em segundos ou milissegundos
+        dataConvertida = new Date(
+            data < 100000000000 ? data * 1000 : data
+        );
+    } else if (typeof data === "string") {
+
+        // Se já estiver no formato DD-MM-AAAA HH:mm:ss,
+        // sem informação de fuso, não é possível converter
+        // com segurança. Mantemos o valor original.
+        const formatoLocal = /^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}:\d{2}$/;
+
+        if (formatoLocal.test(data)) {
+            return data;
+        }
+
+        // ISO sem fuso: considera que o servidor gravou UTC.
+        let valor = data;
+
+        if (
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(valor)
+        ) {
+            valor += "Z";
+        }
+
+        dataConvertida = new Date(valor);
+    } else {
+        return "--";
+    }
+
+    if (isNaN(dataConvertida.getTime())) {
+        return String(data);
+    }
+
+    return new Intl.DateTimeFormat("pt-BR", {
+        timeZone: FUSO_HORARIO,
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(dataConvertida);
+}
+
+// ---------------------------------------------------------
+// REFERÊNCIAS HTML
+// ---------------------------------------------------------
+
+function atualizarElemento(id, valor) {
+    const elemento = document.getElementById(id);
+
+    if (elemento) {
+        elemento.innerText = valor;
+    }
+}
+
+function formatarNumero(valor, casas = 1) {
+    const numero = parseFloat(valor);
+
+    return Number.isFinite(numero)
+        ? numero.toFixed(casas)
+        : "--";
+}
+
+// ---------------------------------------------------------
+// DADOS DA ESTAÇÃO METEOROLÓGICA
+// ---------------------------------------------------------
+
+const estacaoRef = ref(database, "estacao");
+
 onValue(estacaoRef, (snapshot) => {
     const dados = snapshot.val();
 
-    if (dados) {
-        // Pega os dados do banco e injeta nos IDs corretos do HTML
-        // Usamos o .toFixed(1) para deixar apenas 1 casa decimal e ficar mais bonito
-        document.getElementById('temp').innerText = parseFloat(dados.temperatura).toFixed(1);
-        document.getElementById('umid').innerText = parseFloat(dados.umidade).toFixed(1);
-        document.getElementById('chuva').innerText = parseFloat(dados.chuva).toFixed(1);
-        document.getElementById('vento').innerText = parseFloat(dados.vento).toFixed(1);
-        document.getElementById('pressao').innerText = parseFloat(dados.pressao).toFixed(1);
-
-        // CO2 e NH3 geralmente são números inteiros
-        document.getElementById('co2').innerText = parseInt(dados.co2);
-        document.getElementById('nh3').innerText = parseInt(dados.nh3);
-
-        // Textos
-        document.getElementById('qualidade').innerText = dados.qualidadeAr;
-
-        console.log("Dados atualizados com sucesso!");
-    } else {
-        console.log("Nenhum dado encontrado no nó 'estacao'.");
+    if (!dados) {
+        console.log("Nenhum dado encontrado na estação.");
+        return;
     }
+
+    atualizarElemento("temp", formatarNumero(dados.temperatura));
+    atualizarElemento("umid", formatarNumero(dados.umidade));
+    atualizarElemento("chuva", formatarNumero(dados.chuva));
+    atualizarElemento("vento", formatarNumero(dados.vento));
+    atualizarElemento("pressao", formatarNumero(dados.pressao));
+
+    atualizarElemento("co2", formatarNumero(dados.co2, 0));
+    atualizarElemento("nh3", formatarNumero(dados.nh3, 0));
+
+    atualizarElemento("qualidade", dados.qualidadeAr ?? "--");
+
+    console.log("Dados da estação atualizados com sucesso!");
 }, (error) => {
     console.error("Erro ao ler os dados:", error);
 });
 
 // ---------------------------------------------------------
-// ÚLTIMA ATUALIZAÇÃO (mostra quando os dados foram gerados de fato,
-// usando o carimbo de data/hora do registro mais recente em 'historico',
-// e não apenas a hora em que o navegador recebeu o valor)
+// ÚLTIMA ATUALIZAÇÃO
 // ---------------------------------------------------------
-const historicoRef = ref(database, 'historico');
+
+const historicoRef = ref(database, "historico");
+
 onValue(historicoRef, (snapshot) => {
     const dados = snapshot.val();
-    const elemento = document.getElementById('ultima-atualizacao');
-    if (!elemento) return;
 
     if (!dados) {
-        elemento.innerText = 'Última atualização: --';
+        atualizarElemento(
+            "ultima-atualizacao",
+            "Última atualização: --"
+        );
         return;
     }
 
-    const chaves = Object.keys(dados);
-    // As chaves geradas por push() do Firebase seguem ordem cronológica,
-    // então a última do array é sempre a leitura mais recente.
+    // Organiza os registros pela chave do Firebase
+    const chaves = Object.keys(dados).sort();
+
     const ultimaChave = chaves[chaves.length - 1];
     const ultimaLeitura = dados[ultimaChave];
 
     if (ultimaLeitura && ultimaLeitura.datahora) {
-        elemento.innerText = `Última atualização: ${ultimaLeitura.datahora}`;
+        const horarioFormatado = formatarDataHora(
+            ultimaLeitura.datahora
+        );
+
+        atualizarElemento(
+            "ultima-atualizacao",
+            `Última atualização: ${horarioFormatado}`
+        );
     }
+}, (error) => {
+    console.error("Erro ao consultar histórico:", error);
 });
 
 // ---------------------------------------------------------
-// RELÓGIO EM TEMPO REAL (Painel)
+// RELÓGIO EM TEMPO REAL - HORÁRIO DE MANAUS
 // ---------------------------------------------------------
-const relogioElemento = document.getElementById('relogio-tempo-real');
 
 function atualizarRelogio() {
-    const agora = new Date();
-
-    // O padStart(2, '0') garante que os números fiquem com 2 casas (ex: 09 em vez de 9)
-    const horas = String(agora.getHours()).padStart(2, '0');
-    const minutos = String(agora.getMinutes()).padStart(2, '0');
-    const segundos = String(agora.getSeconds()).padStart(2, '0');
-
-    relogioElemento.innerText = `${horas}:${minutos}:${segundos}`;
+    atualizarElemento(
+        "relogio-tempo-real",
+        formatarHorario()
+    );
 }
 
-// Executa a função imediatamente ao carregar a página
+// Atualiza imediatamente
 atualizarRelogio();
 
-// Atualiza o relógio a cada 1000 milissegundos (1 segundo)
+// Atualiza a cada segundo
 setInterval(atualizarRelogio, 1000);
+
+console.log("Sistema Lecitec iniciado com fuso horário de Manaus (UTC-4).");

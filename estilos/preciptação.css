@@ -1,0 +1,83 @@
+
+/* ==========================================
+   LECITECH - PRECIPITAÇÃO
+   CONTROLE DE DIMENSIONAMENTO DO GRÁFICO
+========================================== */
+
+/* Área principal */
+
+.area-grafico {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Informações da data */
+
+#chart-meta {
+    text-align: center;
+    color: #9ba6b5;
+    font-size: 0.82rem;
+    margin: 0 0 15px;
+    line-height: 1.6;
+}
+
+/* CONTÊINER DO CHART.JS */
+
+.grafico-container {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    height: 400px;
+    min-height: 400px;
+    max-height: 400px;
+
+    flex: 0 0 400px;
+
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/*
+   IMPORTANTE:
+   Não definir height ou width diretamente no canvas.
+   O Chart.js controla suas dimensões através do contêiner.
+*/
+
+/* TABLETS */
+
+@media (max-width: 768px) {
+
+    .grafico-container {
+        height: 350px;
+        min-height: 350px;
+        max-height: 350px;
+
+        flex-basis: 350px;
+    }
+
+    #chart-meta {
+        font-size: 0.75rem;
+        padding: 0 8px;
+    }
+
+}
+
+/* CELULARES */
+
+@media (max-width: 480px) {
+
+    .grafico-container {
+        height: 300px;
+        min-height: 300px;
+        max-height: 300px;
+
+        flex-basis: 300px;
+    }
+
+}
