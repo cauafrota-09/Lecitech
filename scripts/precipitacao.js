@@ -1,8 +1,9 @@
+
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDq0D0kz59B3nkMMyIwW5SeHG01_wJPTcM",
+    apiKey: "AIzaSyDq0Dkz59B3nkMMyIwW5SeHG01_wJPTcM",
     authDomain: "lecitech-78671.firebaseapp.com",
     databaseURL: "https://lecitech-78671-default-rtdb.firebaseio.com",
     projectId: "lecitech-78671",
@@ -16,96 +17,185 @@ const database = getDatabase(app);
 
 const historicoRef = ref(database, 'historico');
 const chuvaAtualRef = ref(database, 'estacao/chuva');
+
 const valorDestaque = document.getElementById('valor-atual-destaque');
 const metaEl = document.getElementById('chart-meta');
+const canvas = document.getElementById('graficoCanvas');
 
-const ctx = document.getElementById('graficoCanvas').getContext('2d');
+if (!canvas) {
+    console.error("Canvas do gráfico não encontrado.");
+} else {
 
-let datahorasCompletas = [];
+    const ctx = canvas.getContext('2d');
 
-const meuGrafico = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [],
-        datasets: [{
-            label: 'Precipitação (mm)',
-            data: [],
-            borderColor: '#4FC3F7',
-            backgroundColor: 'rgba(79, 195, 247, 0.08)',
-            borderWidth: 3,
-            pointBackgroundColor: '#1a2430',
-            pointBorderColor: '#4FC3F7',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 7,
-            fill: true,
-            tension: 0.3
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'nearest', intersect: false },
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ba6b5' } },
-            x: { grid: { display: false }, ticks: { color: '#9ba6b5', maxTicksLimit: 10, autoSkip: true } }
+    let datahorasCompletas = [];
+
+    const meuGrafico = new Chart(ctx, {
+        type: 'line',
+
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Precipitação (mm)',
+                data: [],
+                borderColor: '#4FC3F7',
+                backgroundColor: 'rgba(79, 195, 247, 0.08)',
+                borderWidth: 3,
+                pointBackgroundColor: '#1a2430',
+                pointBorderColor: '#4FC3F7',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.3
+            }]
         },
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: '#233142',
-                borderColor: '#3c4c60',
-                borderWidth: 1,
-                padding: 12,
-                titleColor: '#4FC3F7',
-                bodyColor: '#ffffff',
-                callbacks: {
-                    title: (items) => datahorasCompletas[items[0].dataIndex] || '',
-                    label: (item) => `Chuva: ${item.formattedValue} mm`
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: 'nearest',
+                intersect: false
+            },
+
+            scales: {
+                // Mesma configuração do gráfico de umidade
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    ticks: {
+                        color: '#9ba6b5'
+                    }
+                },
+
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#9ba6b5',
+                        maxTicksLimit: 10,
+                        autoSkip: true
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    backgroundColor: '#233142',
+                    borderColor: '#3c4c60',
+                    borderWidth: 1,
+                    padding: 12,
+                    titleColor: '#4FC3F7',
+                    bodyColor: '#ffffff',
+
+                    callbacks: {
+                        title: (items) =>
+                            datahorasCompletas[items[0].dataIndex] || '',
+
+                        label: (item) =>
+                            `Precipitação: ${item.formattedValue} mm`
+                    }
                 }
             }
         }
-    }
-});
+    });
 
-// 1. Escuta o HISTÓRICO para montar a linha do gráfico (só o dia mais recente)
-onValue(historicoRef, (snapshot) => {
-    const dadosHistorico = snapshot.val();
-    if (!dadosHistorico) return;
+    // ---------------------------------------------------------
+    // HISTÓRICO DE PRECIPITAÇÃO
+    // ---------------------------------------------------------
 
-    const leituras = Object.values(dadosHistorico)
-        .filter((l) => l.chuva !== undefined && l.datahora)
-        .map((l) => {
-            const [dataParte, horaParte] = l.datahora.split(' ');
-            return {
-                data: dataParte,
-                hora: (horaParte || '').substring(0, 5),
-                valor: parseFloat(l.chuva),
-                datahora: l.datahora
-            };
-        });
+    onValue(historicoRef, (snapshot) => {
 
-    if (leituras.length === 0) return;
+        const dadosHistorico = snapshot.val();
 
-    const dataMaisRecente = leituras[leituras.length - 1].data;
-    const leiturasDoDia = leituras.filter((l) => l.data === dataMaisRecente);
+        if (!dadosHistorico) return;
 
-    const labels = leiturasDoDia.map((l) => l.hora);
-    const valores = leiturasDoDia.map((l) => l.valor.toFixed(1));
-    datahorasCompletas = leiturasDoDia.map((l) => `${l.data} às ${l.hora}`);
+        const leituras = Object.values(dadosHistorico)
 
-    meuGrafico.data.labels = labels;
-    meuGrafico.data.datasets[0].data = valores;
-    meuGrafico.update();
+            .filter((l) =>
+                l.chuva !== undefined &&
+                l.datahora &&
+                Number.isFinite(parseFloat(l.chuva))
+            )
 
-    if (metaEl) {
-        const [dia, mes, ano] = dataMaisRecente.split('-');
-        metaEl.innerText = `📅 Dados de ${dia}/${mes}/${ano} · Atualiza automaticamente sempre que a estação envia um novo dado (o intervalo entre leituras pode variar)`;
-    }
-});
+            .map((l) => {
 
-// 2. Valor atual em destaque no topo (lido direto de 'estacao/chuva')
-onValue(chuvaAtualRef, (snapshot) => {
-    const val = snapshot.val();
-    if (valorDestaque) valorDestaque.innerText = val !== null ? parseFloat(val).toFixed(1) : '--';
-});
+                const [dataParte, horaParte] = l.datahora.split(' ');
+
+                return {
+                    data: dataParte,
+                    hora: (horaParte || '').substring(0, 5),
+                    valor: parseFloat(l.chuva),
+                    datahora: l.datahora
+                };
+            });
+
+        if (leituras.length === 0) return;
+
+        // Identifica o dia mais recente
+        const dataMaisRecente = leituras[leituras.length - 1].data;
+
+        // Filtra somente as leituras desse dia
+        const leiturasDoDia = leituras.filter(
+            (l) => l.data === dataMaisRecente
+        );
+
+        const labels = leiturasDoDia.map((l) => l.hora);
+
+        const valores = leiturasDoDia.map(
+            (l) => Number(l.valor.toFixed(1))
+        );
+
+        datahorasCompletas = leiturasDoDia.map(
+            (l) => `${l.data} às ${l.hora}`
+        );
+
+        meuGrafico.data.labels = labels;
+        meuGrafico.data.datasets[0].data = valores;
+
+        meuGrafico.update();
+
+        // Atualiza a identificação da data
+        if (metaEl) {
+
+            const [dia, mes, ano] = dataMaisRecente.split('-');
+
+            metaEl.innerText =
+                `📅 Dados de ${dia}/${mes}/${ano} · Atualiza automaticamente sempre que a estação envia um novo dado (o intervalo entre leituras pode variar)`;
+        }
+
+        // Atualiza o valor em destaque
+        if (valorDestaque) {
+
+            const ultimoValor = valores[valores.length - 1];
+
+            valorDestaque.innerText = ultimoValor.toFixed(1);
+        }
+    });
+
+    // ---------------------------------------------------------
+    // VALOR ATUAL DA PRECIPITAÇÃO
+    // ---------------------------------------------------------
+
+    onValue(chuvaAtualRef, (snapshot) => {
+
+        const val = snapshot.val();
+
+        if (valorDestaque) {
+
+            valorDestaque.innerText =
+                val !== null && Number.isFinite(parseFloat(val))
+                    ? parseFloat(val).toFixed(1)
+                    : '--';
+        }
+    });
+
+}
